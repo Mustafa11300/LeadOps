@@ -1,0 +1,27 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Lead-Ops · Pinned Dependencies
+# ──────────────────────────────────────────────────────────────────────────────
+# Install:  pip install -r requirements.txt
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Web framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# Data validation
+pydantic==2.10.4
+
+# Database ORM
+sqlalchemy==2.0.36
+
+# Web search enrichment
+tavily-python==0.5.0
+
+# HTTP client
+httpx==0.28.1
+
+# Environment variable management
+python-dotenv==1.0.1
+
+# YAML parsing (for openenv.yaml)
+pyyaml==6.0.2

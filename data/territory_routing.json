@@ -1,0 +1,92 @@
+{
+  "segmentation": {
+    "enterprise": {
+      "min_revenue": 500000000,
+      "max_revenue": null,
+      "description": "Enterprise accounts with $500M+ annual revenue",
+      "territories": {
+        "West": {
+          "regions": ["California", "Oregon", "Washington", "Nevada", "Arizona", "Utah", "Colorado", "Hawaii", "Alaska"],
+          "ae_pool": [
+            {"id": "enterprise_west_01", "name": "Sarah Kim", "specialties": ["FinTech", "Cybersecurity", "Collaboration"], "capacity": 15, "current_load": 8, "win_rate": 0.34},
+            {"id": "enterprise_west_02", "name": "Marcus Chen", "specialties": ["Cloud Data", "Communications", "Identity"], "capacity": 15, "current_load": 11, "win_rate": 0.29}
+          ]
+        },
+        "East": {
+          "regions": ["New York", "Massachusetts", "Virginia", "Georgia", "Florida", "Pennsylvania", "New Jersey", "Connecticut", "Maryland", "Texas"],
+          "ae_pool": [
+            {"id": "enterprise_east_01", "name": "David Okafor", "specialties": ["DevOps", "Database", "Infrastructure"], "capacity": 15, "current_load": 9, "win_rate": 0.31},
+            {"id": "enterprise_east_02", "name": "Priya Patel", "specialties": ["MarTech", "CRM", "Cybersecurity"], "capacity": 15, "current_load": 7, "win_rate": 0.36}
+          ]
+        },
+        "EMEA": {
+          "regions": ["UK", "Germany", "France", "Netherlands", "Ireland", "Nordics", "Israel"],
+          "ae_pool": [
+            {"id": "enterprise_emea_01", "name": "Emma Thompson", "specialties": ["FinTech", "Cloud Data", "Cybersecurity"], "capacity": 12, "current_load": 6, "win_rate": 0.27},
+            {"id": "enterprise_emea_02", "name": "Lukas Müller", "specialties": ["DevOps", "Infrastructure", "Collaboration"], "capacity": 12, "current_load": 8, "win_rate": 0.25}
+          ]
+        }
+      }
+    },
+    "mid_market": {
+      "min_revenue": 50000000,
+      "max_revenue": 500000000,
+      "description": "Mid-Market accounts with $50M–$500M annual revenue",
+      "territories": {
+        "West": {
+          "regions": ["California", "Oregon", "Washington", "Nevada", "Arizona", "Utah", "Colorado"],
+          "ae_pool": [
+            {"id": "mm_west_01", "name": "Alex Rivera", "specialties": ["SaaS", "FinTech"], "capacity": 25, "current_load": 18, "win_rate": 0.22},
+            {"id": "mm_west_02", "name": "Jordan Lee", "specialties": ["DevOps", "Cloud"], "capacity": 25, "current_load": 15, "win_rate": 0.26},
+            {"id": "mm_west_03", "name": "Taylor Nguyen", "specialties": ["MarTech", "E-commerce"], "capacity": 25, "current_load": 20, "win_rate": 0.19}
+          ]
+        },
+        "East": {
+          "regions": ["New York", "Massachusetts", "Virginia", "Georgia", "Florida", "Pennsylvania", "Texas"],
+          "ae_pool": [
+            {"id": "mm_east_01", "name": "Casey Johnson", "specialties": ["FinTech", "Insurance"], "capacity": 25, "current_load": 22, "win_rate": 0.21},
+            {"id": "mm_east_02", "name": "Jamie Williams", "specialties": ["Healthcare", "SaaS"], "capacity": 25, "current_load": 14, "win_rate": 0.28},
+            {"id": "mm_east_03", "name": "Morgan Davis", "specialties": ["Cybersecurity", "Infrastructure"], "capacity": 25, "current_load": 19, "win_rate": 0.23}
+          ]
+        },
+        "Central": {
+          "regions": ["Illinois", "Ohio", "Michigan", "Minnesota", "Wisconsin", "Missouri", "Indiana"],
+          "ae_pool": [
+            {"id": "mm_central_01", "name": "Riley Smith", "specialties": ["Manufacturing", "SaaS"], "capacity": 25, "current_load": 12, "win_rate": 0.25},
+            {"id": "mm_central_02", "name": "Avery Brown", "specialties": ["Logistics", "Cloud"], "capacity": 25, "current_load": 16, "win_rate": 0.20},
+            {"id": "mm_central_03", "name": "Quinn Taylor", "specialties": ["Healthcare", "FinTech"], "capacity": 25, "current_load": 10, "win_rate": 0.30}
+          ]
+        }
+      }
+    },
+    "smb": {
+      "min_revenue": 0,
+      "max_revenue": 50000000,
+      "description": "SMB accounts with <$50M annual revenue. Pooled round-robin assignment.",
+      "territories": {
+        "Pooled": {
+          "regions": ["All"],
+          "ae_pool": [
+            {"id": "smb_pool_01", "name": "Chris Anderson", "specialties": ["General"], "capacity": 50, "current_load": 35, "win_rate": 0.15},
+            {"id": "smb_pool_02", "name": "Sam Martinez", "specialties": ["General"], "capacity": 50, "current_load": 42, "win_rate": 0.13},
+            {"id": "smb_pool_03", "name": "Pat Wilson", "specialties": ["General"], "capacity": 50, "current_load": 28, "win_rate": 0.17},
+            {"id": "smb_pool_04", "name": "Drew Garcia", "specialties": ["General"], "capacity": 50, "current_load": 38, "win_rate": 0.14},
+            {"id": "smb_pool_05", "name": "Kai Thompson", "specialties": ["General"], "capacity": 50, "current_load": 31, "win_rate": 0.16}
+          ]
+        }
+      }
+    }
+  },
+  "routing_rules": {
+    "priority_order": [
+      "segment_match",
+      "territory_match",
+      "specialty_match",
+      "capacity_available",
+      "win_rate"
+    ],
+    "auto_route_confidence_threshold": 0.85,
+    "max_load_percentage": 0.90,
+    "fallback_strategy": "round_robin_within_segment"
+  }
+}

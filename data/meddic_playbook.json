@@ -1,0 +1,215 @@
+{
+  "framework": "MEDDIC",
+  "version": "1.0",
+  "description": "Sales qualification playbook for the Lead-Ops AI agent. The agent should reference this playbook when scoring leads against MEDDIC criteria.",
+  "qualification_threshold": 0.60,
+  "disqualification_threshold": 0.25,
+  "pillars": [
+    {
+      "id": "metrics",
+      "name": "Metrics",
+      "weight": 1.0,
+      "description": "The quantifiable measures of the economic impact or business value the customer expects to achieve. Metrics prove that solving the problem is worth the investment.",
+      "qualifying_questions": [
+        "What KPIs will this solution directly impact?",
+        "What is the cost of the current problem in dollars per quarter?",
+        "What ROI do you expect within the first 12 months?",
+        "How are you measuring success today?",
+        "What would a 10% improvement in [metric] mean for your business?"
+      ],
+      "signals_to_look_for": [
+        "Specific dollar amounts mentioned in emails (e.g., '$2.3M in lost revenue')",
+        "ROI calculations or business case documents shared",
+        "References to KPI dashboards or performance reports",
+        "Quantified time savings (e.g., '40 hours/week saved')",
+        "Conversion rate or pipeline velocity numbers"
+      ],
+      "red_flags": [
+        "Prospect cannot quantify the business impact",
+        "No metrics discussed after 2+ meetings",
+        "Vague statements like 'we want to improve efficiency'"
+      ],
+      "score_rubric": {
+        "0.0": "No metrics discussed. Prospect has not quantified the problem.",
+        "0.25": "Prospect acknowledges a problem exists but cannot quantify it.",
+        "0.5": "Vague metrics mentioned (e.g., 'we want to improve'). No specific numbers.",
+        "0.75": "Specific metrics identified but not yet validated by the economic buyer.",
+        "1.0": "Concrete, validated metrics with stakeholder agreement on expected ROI."
+      }
+    },
+    {
+      "id": "economic_buyer",
+      "name": "Economic Buyer",
+      "weight": 1.0,
+      "description": "The individual with the authority and budget to approve the purchase. This is the person who can say 'yes' when everyone else says 'no'.",
+      "qualifying_questions": [
+        "Who has final sign-off authority on this budget?",
+        "What is the approval process for a purchase of this size?",
+        "Have you made a purchase of similar magnitude before? Who approved it?",
+        "Is there a committee or board that needs to approve this?",
+        "What is your fiscal year timeline for budget allocation?"
+      ],
+      "signals_to_look_for": [
+        "C-suite or VP-level contact mentioned in email threads",
+        "References to 'getting approval from [executive name]'",
+        "Budget discussions or procurement process details",
+        "Meeting invitations that include senior leadership",
+        "Forwarded emails from executives showing interest"
+      ],
+      "red_flags": [
+        "No executive sponsor identified after discovery call",
+        "Contact says 'I need to check with my boss' repeatedly",
+        "Unable to identify who controls the budget",
+        "Prospect is a junior individual contributor with no purchasing authority"
+      ],
+      "score_rubric": {
+        "0.0": "Economic buyer not identified. No budget authority contact.",
+        "0.25": "Prospect mentions a boss or executive but no direct contact established.",
+        "0.5": "Economic buyer identified by name but no direct engagement yet.",
+        "0.75": "Economic buyer engaged in at least one meeting or email thread.",
+        "1.0": "Economic buyer actively involved, budget confirmed, and timeline agreed."
+      }
+    },
+    {
+      "id": "decision_criteria",
+      "name": "Decision Criteria",
+      "weight": 1.0,
+      "description": "The formal and informal criteria the customer will use to evaluate and compare solutions. Understanding these lets you position your solution against competitors.",
+      "qualifying_questions": [
+        "What are your must-have requirements for this solution?",
+        "How will you evaluate different vendors?",
+        "What technical requirements must be met?",
+        "Are there compliance or security requirements we should know about?",
+        "What has caused previous evaluations to fail?"
+      ],
+      "signals_to_look_for": [
+        "RFP or RFI documents shared",
+        "Technical requirements lists in emails",
+        "References to competitor features or pricing",
+        "Security questionnaires or compliance checklists",
+        "Integration requirements with existing systems"
+      ],
+      "red_flags": [
+        "Prospect has no formal evaluation criteria",
+        "Criteria seem designed to favor a competitor",
+        "Constantly changing requirements mid-evaluation"
+      ],
+      "score_rubric": {
+        "0.0": "No decision criteria identified. Prospect has not thought about evaluation.",
+        "0.25": "Prospect has vague preferences but no formal criteria.",
+        "0.5": "Some criteria identified but not comprehensive or documented.",
+        "0.75": "Formal criteria documented; our solution aligns with most requirements.",
+        "1.0": "Complete criteria understood; we meet or exceed all requirements with evidence."
+      }
+    },
+    {
+      "id": "decision_process",
+      "name": "Decision Process",
+      "weight": 1.0,
+      "description": "The specific steps, timeline, and stakeholders involved in the customer's internal purchasing process. Knowing the process lets you forecast accurately.",
+      "qualifying_questions": [
+        "What are the steps from evaluation to signed contract?",
+        "Who else needs to be involved in this decision?",
+        "What is your target timeline for making a decision?",
+        "Are there any legal or procurement reviews required?",
+        "Have you gone through a similar buying process before? How long did it take?"
+      ],
+      "signals_to_look_for": [
+        "Detailed timeline shared (e.g., 'Board meeting in Q2')",
+        "Introduction to procurement or legal teams",
+        "Multi-stakeholder meeting invitations",
+        "References to 'next steps' with specific dates",
+        "Pilot or POC discussions with defined success criteria"
+      ],
+      "red_flags": [
+        "No clear timeline or next steps",
+        "Prospect unwilling to introduce other stakeholders",
+        "Repeated delays without explanation",
+        "'We're just exploring right now' after multiple meetings"
+      ],
+      "score_rubric": {
+        "0.0": "Decision process completely unknown.",
+        "0.25": "Prospect mentions a general process but no specifics or timeline.",
+        "0.5": "Key steps identified but not all stakeholders are known.",
+        "0.75": "Full process mapped with timeline; key stakeholders identified.",
+        "1.0": "Process documented with dates, all stakeholders engaged, next steps confirmed."
+      }
+    },
+    {
+      "id": "identify_pain",
+      "name": "Identify Pain",
+      "weight": 1.0,
+      "description": "The specific business problem or pain that creates urgency for the customer to act now rather than later. Without pain, there is no urgency to buy.",
+      "qualifying_questions": [
+        "What is the biggest challenge you're facing right now?",
+        "What happens if you don't solve this problem in the next 6 months?",
+        "How is this problem affecting your team's productivity?",
+        "Have you tried to solve this before? What happened?",
+        "What triggered you to start looking for a solution now?"
+      ],
+      "signals_to_look_for": [
+        "Emotional language about frustrations (e.g., 'our team is burning out')",
+        "Specific anecdotes about process failures",
+        "Urgency indicators (e.g., 'we need this before Q3')",
+        "Executive pressure mentioned (e.g., 'the board is asking about this')",
+        "Competitive pressure (e.g., 'our competitors already have this')"
+      ],
+      "red_flags": [
+        "No clear pain articulated — appears to be 'nice to have'",
+        "Pain is theoretical, not experienced ('we might need this someday')",
+        "No urgency or timeline pressure",
+        "Prospect is 'just doing research'"
+      ],
+      "score_rubric": {
+        "0.0": "No pain identified. Prospect seems satisfied with status quo.",
+        "0.25": "Minor inconvenience acknowledged but no urgency.",
+        "0.5": "Clear pain identified but not quantified. Some urgency.",
+        "0.75": "Significant pain with urgency. Prospect has tried and failed to solve it.",
+        "1.0": "Critical, quantified pain with executive-level urgency and a hard deadline."
+      }
+    },
+    {
+      "id": "champion",
+      "name": "Champion",
+      "weight": 1.0,
+      "description": "An internal advocate within the customer organization who has influence, supports your solution, and helps navigate the internal buying process.",
+      "qualifying_questions": [
+        "Who internally is most excited about this solution?",
+        "Has anyone presented our solution to leadership on your behalf?",
+        "Do you have the ability to influence the purchase decision?",
+        "Who would benefit most from this solution in your organization?",
+        "Can you introduce us to the decision-maker directly?"
+      ],
+      "signals_to_look_for": [
+        "Contact proactively shares internal information",
+        "Contact forwards emails to other stakeholders on your behalf",
+        "References to internal presentations about your solution",
+        "Contact coaches you on internal politics or objections",
+        "Contact follows up without being prompted"
+      ],
+      "red_flags": [
+        "No single advocate — all contacts are passive",
+        "Champion has no influence in the organization",
+        "Champion is a contractor or consultant with no authority",
+        "Contact is helpful but explicitly says 'I have no influence'"
+      ],
+      "score_rubric": {
+        "0.0": "No champion identified. All contacts are passive.",
+        "0.25": "Friendly contact but no evidence of internal advocacy.",
+        "0.5": "Engaged contact who expresses support but has not taken action.",
+        "0.75": "Active champion who has presented to leadership or made introductions.",
+        "1.0": "Powerful champion with influence, actively selling internally, coaching our team."
+      }
+    }
+  ],
+  "composite_scoring": {
+    "method": "weighted_average",
+    "weights_equal": true,
+    "interpretation": {
+      "0.0_to_0.25": "DISQUALIFY — Lead does not meet minimum qualification criteria. Remove from pipeline.",
+      "0.25_to_0.50": "NURTURE — Lead shows some potential but is not ready for sales engagement. Add to nurture sequence.",
+      "0.50_to_0.75": "QUALIFIED — Lead meets basic criteria. Assign to AE for further development.",
+      "0.75_to_1.0": "HIGHLY QUALIFIED — Strong opportunity. Prioritize and fast-track."
+    }
+  }
+}

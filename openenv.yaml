@@ -1,0 +1,134 @@
+spec_version: 1
+
+name: lead_ops
+version: "1.0.0"
+description: >
+  RL environment for autonomous sales lead enrichment,
+  MEDDIC qualification, and strategic routing.
+
+type: agent_environment
+
+runtime:
+  language: python
+  version: "3.11"
+  entrypoint: server/app.py
+
+port: 8000
+
+# ---------------------------------------------------------------------------
+# Observation Space (shared across tasks)
+# ---------------------------------------------------------------------------
+observation_space:
+  type: object
+  fields:
+    - name: lead_id
+      type: string
+      description: Unique lead identifier
+    - name: company_name
+      type: string
+      description: Company name
+    - name: industry
+      type: string
+      nullable: true
+      description: Industry vertical
+    - name: annual_revenue
+      type: float
+      nullable: true
+      description: Annual revenue in USD
+    - name: employee_count
+      type: integer
+      nullable: true
+      description: Number of employees
+    - name: website
+      type: string
+      nullable: true
+      description: Company website URL
+    - name: contact_name
+      type: string
+      nullable: true
+      description: Primary contact name
+    - name: contact_title
+      type: string
+      nullable: true
+      description: Contact job title
+    - name: contact_email
+      type: string
+      nullable: true
+      description: Contact email
+    - name: contact_linkedin
+      type: string
+      nullable: true
+      description: LinkedIn profile URL
+    - name: tech_stack
+      type: array
+      items: string
+      description: Known technologies used
+    - name: lead_source
+      type: string
+      nullable: true
+      description: How the lead was acquired
+    - name: meddic_scores
+      type: object
+      nullable: true
+      description: Current MEDDIC qualification scores (0.0–1.0 per pillar)
+    - name: enrichment_data
+      type: object
+      nullable: true
+      description: Raw enrichment payload from external sources
+    - name: routing_result
+      type: object
+      nullable: true
+      description: Routing assignment result
+
+# ---------------------------------------------------------------------------
+# Action Space
+# ---------------------------------------------------------------------------
+action_space:
+  type: object
+  fields:
+    - name: thought
+      type: string
+      description: Chain-of-thought reasoning before acting
+    - name: tool_name
+      type: string
+      enum:
+        - tavily_search
+        - crm_lookup
+        - linkedin_enrich
+        - score_meddic
+        - route_to_ae
+        - disqualify
+      description: The tool to invoke
+    - name: parameters
+      type: object
+      description: Tool-specific parameters
+    - name: confidence
+      type: float
+      description: Agent confidence in this action (0.0–1.0)
+
+# ---------------------------------------------------------------------------
+# Tasks
+# ---------------------------------------------------------------------------
+tasks:
+  - id: enrich_lead
+    description: >
+      Enrich a raw CRM lead with firmographic, technographic,
+      and contact intelligence using web search and LinkedIn.
+    reward_range: [0.0, 1.0]
+    max_steps: 10
+
+  - id: meddic_qualify
+    description: >
+      Score and qualify a lead against the six MEDDIC framework
+      pillars: Metrics, Economic Buyer, Decision Criteria,
+      Decision Process, Identify Pain, and Champion.
+    reward_range: [0.0, 1.0]
+    max_steps: 12
+
+  - id: strategic_route
+    description: >
+      Route a qualified lead to the optimal Account Executive
+      or sales team based on deal fit, territory, and
+      historical win-rate patterns.
+    reward_range: [0.0, 1.0]
+    max_steps: 5
