@@ -12,7 +12,11 @@ dependencies = [
     'openai',
     'httpx',
     'python-dotenv',
+    'openenv>=0.1.13',
 ]
+
+[project.scripts]
+leadops-server = "server.app:main"
 
 [build-system]
 requires = ['setuptools>=61.0']
