@@ -19,9 +19,9 @@ Usage::
     ENV_URL=https://your-space.hf.space python inference.py
 
 Environment Variables Required:
-    - API_BASE_URL:   OpenAI-compatible API base URL
-    - MODEL_NAME:     Model identifier
-    - OPENAI_API_KEY: API key for the model (or HF_TOKEN)
+    - API_BASE_URL:    OpenAI-compatible API base URL (HF Mistral default provided)
+    - MODEL_NAME:      Model identifier (HF Mistral default provided)
+    - HF_TOKEN:        API key for HuggingFace
     - ENV_URL:        (optional) Override the environment URL
 
 Strict Requirements:
@@ -38,19 +38,17 @@ import os
 import sys
 import time
 from datetime import datetime
-from pathlib import Path
 
 import httpx
+from openai import OpenAI
 
 # ── Configuration ────────────────────────────────────────────────────────────
 
 # Environment URL (local or remote)
 ENV_URL = os.getenv("ENV_URL", "http://localhost:7860")
-
-# LLM Configuration
-API_BASE_URL = os.getenv("API_BASE_URL", "")
-MODEL_NAME = os.getenv("MODEL_NAME", "")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", os.getenv("HF_TOKEN", ""))
+API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
+HF_TOKEN = os.getenv("HF_TOKEN", "")
 
 # Inference limits
 MAX_STEPS = int(os.getenv("MAX_STEPS", "10"))
@@ -63,25 +61,12 @@ TASKS = ["enrich_lead", "meddic_qualify", "strategic_route"]
 
 # ── OpenAI Client Setup ─────────────────────────────────────────────────────
 
-def _get_openai_client():
-    """Create an OpenAI-compatible client."""
-    try:
-        from openai import OpenAI
-    except ImportError:
-        print("[ERROR] openai package not installed. Run: pip install openai", file=sys.stderr)
+def _get_llm_client():
+    """Create an OpenAI client using env-based endpoint/model/token."""
+    if not HF_TOKEN:
+        print("[ERROR] HF_TOKEN is not set.", file=sys.stderr)
         sys.exit(1)
-
-    if not API_BASE_URL:
-        print("[ERROR] API_BASE_URL is not set.", file=sys.stderr)
-        sys.exit(1)
-    if not OPENAI_API_KEY:
-        print("[ERROR] OPENAI_API_KEY (or HF_TOKEN) is not set.", file=sys.stderr)
-        sys.exit(1)
-
-    return OpenAI(
-        base_url=API_BASE_URL,
-        api_key=OPENAI_API_KEY,
-    )
+    return OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
 
 # ── System Prompt ────────────────────────────────────────────────────────────
@@ -184,7 +169,7 @@ def env_step(client: httpx.Client, session_id: str, action: dict) -> dict:
 # ── LLM Interaction ─────────────────────────────────────────────────────────
 
 def get_model_message(
-    openai_client,
+    llm_client,
     task_id: str,
     observation: dict,
     step_history: list[dict],
@@ -192,7 +177,7 @@ def get_model_message(
     """
     Query the LLM to get the next action.
 
-    Uses the OpenAI client with a strict Sales Ops system prompt.
+    Uses the OpenAI-compatible client for HF Mistral with a strict Sales Ops system prompt.
     Returns a parsed JSON action dict.
     """
     # Build context message
@@ -212,7 +197,7 @@ def get_model_message(
     )
 
     try:
-        response = openai_client.chat.completions.create(
+        response = llm_client.chat.completions.create(
             model=MODEL_NAME,
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
@@ -258,52 +243,36 @@ def get_model_message(
 
 def log_start(task_id: str):
     """Emit the mandatory [START] log."""
-    log = {
-        "type": "START",
-        "env": "lead_ops",
-        "task": task_id,
-        "model": MODEL_NAME,
-        "timestamp": datetime.utcnow().isoformat(),
-        "max_steps": MAX_STEPS,
-    }
-    print(f"[START] {json.dumps(log)}")
+    print(
+        f"[START] task={task_id} env={ENV_URL} model={MODEL_NAME} "
+        f"timestamp={datetime.utcnow().isoformat()} max_steps={MAX_STEPS}"
+    )
 
 
 def log_step(step_num: int, action: dict, reward: float, done: bool, error: str | None = None):
     """Emit the mandatory [STEP] log."""
-    log = {
-        "type": "STEP",
-        "step": step_num,
-        "action": action.get("tool_name", "unknown"),
-        "reward": f"{reward:.2f}",
-        "done": done,
-        "error": error,
-    }
-    print(f"[STEP] {json.dumps(log)}")
+    error_value = "null" if error is None else error
+    print(
+        f"[STEP] step={step_num} action={action.get('tool_name', 'unknown')} "
+        f"reward={reward:.2f} done={str(done).lower()} error={error_value}"
+    )
 
 
 def log_end(task_id: str, rewards: list[float], success: bool, total_steps: int):
     """Emit the mandatory [END] log."""
     score = sum(rewards) / MAX_TOTAL_REWARD if rewards else 0.0
     score = max(0.0, min(1.0, score))
-    log = {
-        "type": "END",
-        "env": "lead_ops",
-        "task": task_id,
-        "model": MODEL_NAME,
-        "rewards": ",".join(f"{r:.2f}" for r in rewards),
-        "score": f"{score:.2f}",
-        "success": str(success).lower(),
-        "total_steps": total_steps,
-        "timestamp": datetime.utcnow().isoformat(),
-    }
-    print(f"[END] {json.dumps(log)}")
+    rewards_csv = ",".join(f"{r:.2f}" for r in rewards)
+    print(
+        f"[END] task={task_id} success={str(success).lower()} steps={total_steps} "
+        f"score={score:.2f} rewards={rewards_csv} timestamp={datetime.utcnow().isoformat()}"
+    )
 
 
 # ── Main Inference Loop ──────────────────────────────────────────────────────
 
 def run_task(
-    openai_client,
+    llm_client,
     http_client: httpx.Client,
     task_id: str,
     start_time: float,
@@ -335,7 +304,7 @@ def run_task(
             break
 
         # Get action from LLM
-        action = get_model_message(openai_client, task_id, observation, step_history)
+        action = get_model_message(llm_client, task_id, observation, step_history)
 
         # Execute action
         error_msg = None
@@ -399,14 +368,8 @@ def main():
     print(f"  Time Budget: {TIME_BUDGET_SECONDS}s")
     print("=" * 60)
 
-    # Validate configuration
-    if not API_BASE_URL or not MODEL_NAME:
-        print("[ERROR] API_BASE_URL and MODEL_NAME must be set.", file=sys.stderr)
-        print("  Export them in your shell or add to .env", file=sys.stderr)
-        sys.exit(1)
-
     # Create clients
-    openai_client = _get_openai_client()
+    llm_client = _get_llm_client()
     http_client = httpx.Client(timeout=60.0)
 
     # Verify environment is reachable
@@ -427,7 +390,7 @@ def main():
         print(f"  Running task: {task_id}")
         print(f"{'─' * 40}")
 
-        reward, success = run_task(openai_client, http_client, task_id, start_time)
+        reward, success = run_task(llm_client, http_client, task_id, start_time)
         all_rewards.append(reward)
         all_success.append(success)
 

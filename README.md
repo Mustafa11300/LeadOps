@@ -130,8 +130,8 @@ Rewards are scalar values in `[0.0, 1.0]` with component breakdowns:
 ### Prerequisites
 
 - Python 3.11+
+- A HuggingFace API token ([huggingface.co/settings/tokens](https://huggingface.co/settings/tokens))
 - A Tavily API key ([tavily.com](https://tavily.com))
-- An OpenAI-compatible LLM endpoint
 
 ### Setup
 
@@ -168,9 +168,10 @@ uvicorn server.app:app --host 0.0.0.0 --port 7860 --reload
 
 ```bash
 # Set your model config
-export API_BASE_URL=https://api.openai.com/v1
-export MODEL_NAME=gpt-4o
-export OPENAI_API_KEY=your-key
+export HF_TOKEN=your-huggingface-token
+export API_BASE_URL=https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2
+export MODEL_NAME=mistralai/Mistral-7B-Instruct-v0.2
+export TAVILY_API_KEY=your-tavily-key
 
 # Run against local server
 python inference.py
@@ -184,11 +185,10 @@ docker build -t leadops .
 
 # Run
 docker run -p 7860:7860 \
-  -e HF_TOKEN=your-token \
-  -e OPENAI_API_KEY=your-openai-key \
-  -e API_BASE_URL=https://api.openai.com/v1 \
-  -e MODEL_NAME=gpt-4o-mini \
-  -e TAVILY_API_KEY=your-key \
+  -e HF_TOKEN=your-huggingface-token \
+  -e API_BASE_URL=https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2 \
+  -e MODEL_NAME=mistralai/Mistral-7B-Instruct-v0.2 \
+  -e TAVILY_API_KEY=your-tavily-key \
   leadops
 
 # Validate endpoints against local container

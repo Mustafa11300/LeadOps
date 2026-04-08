@@ -356,7 +356,12 @@ class ComplianceChecker:
             self._record(False, "config.py syntax", str(exc))
             return False
 
-        required_vars = ["HF_TOKEN", "API_BASE_URL", "TAVILY_API_KEY"]
+        required_vars = [
+            "LLM_PROVIDER",
+            "OPENAI_API_KEY",
+            "HF_TOKEN",
+            "TAVILY_API_KEY",
+        ]
         for var in required_vars:
             ok = var in source
             self._record(ok, f"config.py references '{var}'", "" if ok else "missing")
