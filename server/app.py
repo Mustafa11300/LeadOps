@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from typing import Optional
 
 # Ensure project root is on path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -23,7 +24,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from fastapi import FastAPI, HTTPException, Body
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from session_manager import SessionManager
 from environment import LeadOpsEnv
@@ -76,25 +77,59 @@ async def health_check():
 
 
 @app.post("/reset", response_model=ResetResponse)
-async def reset(req: ResetRequest = Body(...)):
-    """Initialize a new RL episode."""
+async def reset(data: Optional[dict] = Body(None)):
+    """Initialize a new RL episode.
+
+    Accepts optional body to stay robust against validators that send null.
+    Defaults to task_id='enrich_lead' when payload is missing.
+    """
     try:
-        session_id, obs = env.reset(req.task_id)
+        if data is None:
+            data = {}
+
+        raw_task_id = data.get("task_id", TaskID.ENRICH_LEAD.value)
+        try:
+            task_id = TaskID(raw_task_id)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid task_id '{raw_task_id}'. Expected one of: enrich_lead, meddic_qualify, strategic_route.",
+            )
+
+        session_id, obs = env.reset(task_id)
         return {
             "session_id": session_id,
-            "task_id": req.task_id.value,
+            "task_id": task_id.value,
             "observation": obs,
         }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/step", response_model=StepResult)
-async def step(req: StepRequest = Body(...)):
-    """Execute an action and advance the environment."""
+async def step(data: Optional[dict] = Body(None)):
+    """Execute an action and advance the environment.
+
+    Uses explicit validation to avoid FastAPI's automatic 422 for null payloads.
+    """
     try:
+        if data is None:
+            data = {}
+
+        try:
+            req = StepRequest.model_validate(data)
+        except ValidationError:
+            raise HTTPException(
+                status_code=400,
+                detail="Missing or invalid step payload. Required keys: session_id, action.",
+            )
+
         result = env.step(req.session_id, req.action)
         return result
+    except HTTPException:
+        raise
     except KeyError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except ValueError as e:
