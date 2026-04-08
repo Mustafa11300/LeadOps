@@ -89,7 +89,7 @@ class Settings:
 
     @property
     def LLM_PROVIDER(self) -> str:
-        """Returns the LLM provider: 'openai', 'huggingface', or 'gemini'."""
+        """Returns the LLM provider: 'openai', 'huggingface', or 'compatible'."""
         return self._llm_provider.lower()
     
     @property
@@ -118,8 +118,8 @@ class Settings:
             return "https://api.openai.com/v1"
         elif self.LLM_PROVIDER == "huggingface":
             return "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
-        else:  # gemini
-            return "https://generativelanguage.googleapis.com/v1beta/openai/"
+        else:  # compatible provider
+            return "https://api.openai.com/v1"
     
     @property
     def MODEL_NAME(self) -> str:
@@ -131,8 +131,8 @@ class Settings:
             return "gpt-4o-mini"
         elif self.LLM_PROVIDER == "huggingface":
             return "mistralai/Mistral-7B-Instruct-v0.2"
-        else:  # gemini
-            return "gemini-2.0-flash"
+        else:  # compatible provider
+            return "gpt-4o-mini"
 
     @property
     def TAVILY_API_KEY(self) -> str:
@@ -155,8 +155,8 @@ class Settings:
             return bool(self._openai_api_key)
         elif self.LLM_PROVIDER == "huggingface":
             return bool(self._hf_token)
-        else:  # gemini
-            return bool(self._openai_api_key)  # Gemini also uses openai SDK
+        else:  # compatible provider
+            return bool(self._openai_api_key)
     
     @property
     def is_configured(self) -> bool:

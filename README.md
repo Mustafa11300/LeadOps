@@ -14,14 +14,12 @@ Lead-Ops models the end-to-end lifecycle of a B2B sales lead as a reinforcement 
 
 The environment uses a **real SQLite database** (no mock data), **Tavily API** for live web search, and **programmatic grading** (no LLM-as-a-judge).
 
-### Environment Motivation
+### 🎯 Environment Motivation: Why LeadOps-Sim?
 
-Sales Operations leaders face three critical challenges:
-1. **Manual Lead Enrichment** — SDRs spend 30–40% of their time researching leads instead of selling
-2. **Inconsistent MEDDIC Qualification** — Scoring varies wildly by rep experience and judgment
-3. **Suboptimal Routing** — Round-robin assignment ignores deal fit, territory expertise, and win rates
-
-Lead-Ops provides a controlled simulation where AI agents can learn to automate these tasks with measurable, deterministic performance metrics.
+In modern B2B Sales, CRM data is notoriously fragmented. LeadOps-Sim moves beyond toy problems by simulating the high-stakes workflow of a Sales Operations specialist:
+- **No-Mock Persistence:** Uses a live SQLite database and real-world web intelligence (Tavily).
+- **Behavioral Analysis:** Agents must parse raw interaction logs to identify the Economic Buyer and Primary Pain using the MEDDIC framework.
+- **Strategic Impact:** Poor routing directly affects revenue, forcing the agent to prioritize accuracy over speed.
 
 ---
 
