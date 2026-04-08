@@ -154,8 +154,10 @@ async def state(session_id: str):
 def main() -> None:
     """Run the API server for local and script-based entrypoints."""
     import uvicorn
+    import os
 
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    port = int(os.getenv("PORT", "7860"))
+    uvicorn.run("server.app:app", host="0.0.0.0", port=port, reload=False)
 
 if __name__ == "__main__":
     main()
