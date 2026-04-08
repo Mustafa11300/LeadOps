@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-leadops-server = "server.app:main"
+leadops-server = "app:main"
 
 [build-system]
 requires = ['setuptools>=61.0']

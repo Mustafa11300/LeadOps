@@ -10,7 +10,12 @@ import uvicorn
 from server.app import app
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Run the API server using root-level entrypoint for deployment validators."""
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "7860"))
-    uvicorn.run(app, host=host, port=port, workers=1)
+    uvicorn.run("app:app", host=host, port=port, reload=False)
+
+
+if __name__ == "__main__":
+    main()
