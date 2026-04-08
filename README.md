@@ -1,3 +1,12 @@
+---
+title: LeadOps
+emoji: 🏢
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_file: app.py
+pinned: false
+---
 # Lead-Ops
 
 > **OpenEnv-compliant RL environment for autonomous sales lead enrichment, MEDDIC qualification, and strategic routing.**
